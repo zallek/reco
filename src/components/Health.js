@@ -23,7 +23,7 @@ function HealthSection({ name, type, defaultExpanded, alerts }) {
       {alerts.map((alert, i) =>
         <Alert key={i} bsStyle={type}>
           <span>{numeral(alert.weight * 100).format('0,0')} - </span>
-          {alert.type && <strong>{alert.type}- </strong>}
+          {alert.type && <strong>{alert.type} - </strong>}
           <span>{alert.message}</span>
         </Alert>
       )}

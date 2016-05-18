@@ -37,6 +37,7 @@ class Evolution {
     .then(this.compute)
     .then(res => ({
       ...res,
+      type: this.type,
       message: this.message(res),
     }));
   }
