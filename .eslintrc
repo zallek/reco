@@ -2,6 +2,8 @@
   "extends": "airbnb",
   "parser": "babel-eslint",
   "rules": {
-    "arrow-body-style": 0
+    "arrow-body-style": 0,
+    "max-length": 0,
+    "no-nested-ternary": 0
   }
 }

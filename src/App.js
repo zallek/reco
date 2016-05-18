@@ -1,26 +1,25 @@
 import React, { Component } from 'react';
 import BotifySDK from 'botify-sdk';
-import Alerts from './components/Alerts';
-import * as alerts from './alerts';
+import Health from './components/Health';
+import evolutions from './health/evolutions';
 import * as config from './config';
 
 
-function aggregate(urlsAggsQueries) {
-  BotifySDK.AnalysisController.getUrlsAggs({
-    username: config.username,
-    project: config.project,
-    analysis: config.analysis,
-    urlsAggsQueries,
-  });
-}
-
-function compareAggregate(urlsAggsQueries) {
-  BotifySDK.ProjectController.getProjectUrlsAggs({
-    username: config.username,
-    project: config.project,
-    last_analysis_slug: config.analysis,
-    nb_analyses: 2,
-    urlsAggsQueries,
+BotifySDK.authToken(config.accessToken);
+function aggregate(analysis, urlsAggsQueries) {
+  return new Promise((resolve, reject) => {
+    BotifySDK.AnalysisController.getUrlsAggs({
+      username: config.username,
+      projectSlug: config.project,
+      analysisSlug: analysis,
+      urlsAggsQueries,
+    }, (err, response) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(response);
+      }
+    });
   });
 }
 
@@ -31,24 +30,18 @@ export class App extends Component {
     super(props);
 
     this.state = {
-      success: [],
-      warnings: [],
-      errors: [],
+      fromAnalysis: '20160515',
+      toAnalysis: '20160516',
+      evolutions: [],
     };
   }
 
   componentDidMount() {
-    console.log('boo', alerts);
-    ['success', 'warnings', 'errors'].forEach(alertCat => {
-      alerts[alertCat].compute(aggregate, compareAggregate).then(res => {
-        if (res.active) {
-          this.setState({
-            [alertCat]: this.state[alertCat].concat({
-              type: alert.type,
-              message: alert.message(res),
-            }),
-          });
-        }
+    evolutions.forEach(evolution => {
+      evolution.fetch(aggregate, this.state.fromAnalysis, this.state.toAnalysis).then(res => {
+        this.setState({
+          evolutions: this.state.evolutions.concat(res),
+        });
       });
     });
   }
@@ -56,10 +49,8 @@ export class App extends Component {
   render() {
     return (
       <div className="App">
-        <Alerts
-          success={this.state.success}
-          warnings={this.state.warnings}
-          errors={this.state.errors}
+        <Health
+          evolutions={this.state.evolutions}
         />
       </div>
     );

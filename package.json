@@ -55,6 +55,8 @@
   },
   "dependencies": {
     "botify-sdk": "^1.0.0-beta4",
+    "lodash": "^4.12.0",
+    "numeral": "^1.5.3",
     "react": "^15.0.2",
     "react-bootstrap": "^0.29.4",
     "react-dom": "^15.0.2"
